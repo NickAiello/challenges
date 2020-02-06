@@ -1,7 +1,7 @@
 extern crate rand;
 
 use rand::Rng;
-
+use std::{env,process};
 // Shuffle function, but logically not necessary to shuffle the array
 // as first person always takes a random seat
 // fn shuffle<T>(vec: &mut Vec<T>) {
@@ -27,8 +27,8 @@ fn grab_seats(n: usize)->bool{
     let mut rng = rand::thread_rng();
     let mut seats = assign_seats(n);
 
-    seats[rng.gen_range(0,n)] = true;//first person takes a random seat
-    for i in 1..n-1 {
+    seats[rng.gen_range(0,n)] = true;//first person takes any random seat
+    for i in 1..n {
         if seats[n-1] == true {//If that last seat is taken, the last person could never get their seat
             return false;
         }
@@ -43,7 +43,13 @@ fn grab_seats(n: usize)->bool{
 }
 
 fn main() {
-    let iterations = 1000000;
+    let args:Vec<String> = env::args().collect();
+    if args.len() != 2 {
+        println!("Needs 1 numeric arg for number of iterations. Received {}",args.len());
+        process::exit(1);
+    }
+    //let iterations = 100000;
+    let iterations = args[1].parse::<u32>().unwrap();
     let mut count: u32 = 0;
     for _ in 0..iterations {
         if grab_seats(100) {
